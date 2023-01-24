@@ -1,91 +1,63 @@
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from './page.module.css'
-
-const inter = Inter({ subsets: ['latin'] })
+import { IBM_Plex_Mono } from "@next/font/google";
+import Image from "next/image";
+import Logo from "@/images/logo.png";
+import clsx from "clsx";
+import Button from "@/components/style/Button";
+import Plan from "@/images/plan.svg";
+import Link from "next/link";
+const ibm = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: "400",
+});
 
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    <div
+      className={clsx(
+        "w-full md:px-[100px] md:py-[80px] px-[40px] py-[100px]",
+        ibm.className
+      )}
+    >
+      <Header />
+      <Content />
+    </div>
+  );
 }
+
+export const Header = () => {
+  return (
+    <Link href={"/"}>
+      <div className="flex space-x-0 items-center select-none justify-center md:justify-start">
+        <div className="relative w-[50px] h-[50px]">
+          <Image src={Logo} alt="logo" fill priority />
+        </div>
+        <h1
+          className={clsx(
+            "relative text-3xl tracking-tighter select-none",
+            ibm.className
+          )}
+        >
+          GoChat
+          <span className="absolute w-[100px] h-[100px] top-[-55px] left-0">
+            <Image src={Plan} fill alt="Plan" priority />
+          </span>
+        </h1>
+      </div>
+    </Link>
+  );
+};
+
+const Content = () => {
+  return (
+    <div className="flex flex-col md:ml-2 h-full md:w-full">
+      <p className="text-lg text-gray-500 text-center md:text-left mt-4 md:mt-0">
+        You can chat with just name and your secret code.
+      </p>
+      <div className="flex flex-col space-y-4 w-full h-full justify-center items-center mt-[-80px]">
+        <Button text="Login" href="/auth/login" width={true} />
+        <br></br>
+        <Button text="Register" href="/auth/register" width={true} />
+      </div>
+    </div>
+  );
+};
