@@ -1,9 +1,11 @@
+import "@/app/globals.css";
 import { AppProps } from "next/app";
 import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import NProgress from "nprogress"; //nprogress module
 import "nprogress/nprogress.css";
-import PageLoader from "@/components/style/PageLoader";
+import { Toaster } from "react-hot-toast";
+// import PageLoader from "@/components/style/PageLoader";
 
 export default function MyApp({
   Component,
@@ -30,6 +32,7 @@ export default function MyApp({
       Router.events.off("routeChangeError", end);
     };
   }, []);
+  
   return (
     <AnimatePresence
       mode="wait"
@@ -37,6 +40,7 @@ export default function MyApp({
       onExitComplete={() => window.scrollTo(0, 0)}
     >
       <Component {...pageProps} key={Router.asPath} />
+      <Toaster />
     </AnimatePresence>
   );
 }

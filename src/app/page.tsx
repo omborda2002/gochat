@@ -33,7 +33,7 @@ export const Header = () => {
         </div>
         <h1
           className={clsx(
-            "relative text-3xl tracking-tighter select-none",
+            "relative text-3xl tracking-tighter select-none text-white",
             ibm.className
           )}
         >
@@ -54,9 +54,9 @@ const Content = () => {
         You can chat with just name and your secret code.
       </p>
       <div className="flex flex-col space-y-4 w-full h-full justify-center items-center mt-[-80px]">
-        <Button text="Login" href="/auth/login" width={true} />
+        <Button text="Login" href="/auth/login" width={"true"} />
         <br></br>
-        <Button text="Register" href="/auth/register" width={true} />
+        <Button text="Register" href="/auth/register" width={"true"} />
       </div>
     </div>
   );

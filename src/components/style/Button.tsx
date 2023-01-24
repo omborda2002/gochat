@@ -2,13 +2,13 @@ import clsx from "clsx";
 import Link from "next/link";
 import React from "react";
 
-const Button = (props:any) => {
+const Button = (props: any) => {
   return (
     <Link href={props.href || ""}>
       <div
         className={clsx(
           "relative inline-flex items-center justify-center px-10 py-4 overflow-hidden font-mono font-medium tracking-tighter text-white bg-gray-800 rounded-lg group",
-          props.width ? "w-[200px]" : ""
+          props.width ? " w-[200px]" : ""
         )}
         {...props}
       >
