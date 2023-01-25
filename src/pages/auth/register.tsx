@@ -4,9 +4,13 @@ import Button from "@/components/style/Button";
 import Input from "@/components/style/Input";
 import { IBM_Plex_Mono } from "@next/font/google";
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import ReactCodeInput from "react-code-input";
 import { createUser } from "@/lib/Auth";
+import { useRouter } from "next/router";
+import { NextPageContext } from "next";
+import Cookies from "cookie";
+
 const ibm = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: "400",
@@ -28,6 +32,7 @@ const Register = () => {
 export default Register;
 
 const Content = () => {
+  const Router = useRouter();
   const [password, setPassword] = useState("");
   const [btnIsPressed, setBtnIsPressed] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
@@ -41,6 +46,10 @@ const Content = () => {
     username: "",
     password: "",
   });
+
+  useLayoutEffect(() => {
+    if (localStorage.getItem("accesstoken")) Router.push("/room");
+  }, []);
 
   useEffect(() => {
     setWidth(window.innerWidth);
@@ -140,11 +149,25 @@ const Content = () => {
           onClick={async () => {
             checkPassword();
             if (isPasswordValid) {
-              await createUser(form);
+              const data = await createUser(form);
+              if (data.token) Router.push("/room");
             }
           }}
         />
       </div>
     </div>
   );
+};
+
+Register.getInitialProps = async (ctx: NextPageContext) => {
+  const { req, res } = ctx;
+  if (req && res) {
+    const cookies = Cookies.parse(req.headers.cookie || "");
+    console.log(cookies);
+    if (cookies.accesstoken) {
+      res.writeHead(302, { Location: "/room" });
+      return res.end();
+    }
+  }
+  return {};
 };

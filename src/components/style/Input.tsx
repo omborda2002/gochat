@@ -12,6 +12,7 @@ const Input = (props: any) => {
       <input
         id="4"
         type={props.type}
+        required={props.required? props.required : false}
         {...props}
         className="peer h-10 w-full rounded-md bg-gray-800/75 px-4 font-thin outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:ring-rose-500 focus:shadow-md focus:ring-2 focus:ring-offset-1 focus:ring-offset-gray-800/75 text-white border border-gray-800/75"
       />

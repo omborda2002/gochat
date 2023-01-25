@@ -22,7 +22,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const existingUser = await Users.findOne({ username });
 
     if (existingUser) {
-      return res.status(422).json({ message: "User already exists!"});
+      return res.status(422).json({ message: "User already exists!" });
     } else {
       const hashedPassword: string = await hashPassword(password);
 
@@ -41,7 +41,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       };
 
       const token = jwt.sign({ ...data }, `${process.env.JWT_TOKEN_SECRET}`);
-
       res.setHeader(
         "Set-Cookie",
         Cookie.serialize("accesstoken", token, {

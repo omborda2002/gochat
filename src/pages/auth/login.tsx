@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import clsx from "clsx";
 import { IBM_Plex_Mono } from "@next/font/google";
 import { Header } from "@/app/page";
@@ -6,6 +6,9 @@ import Button from "@/components/style/Button";
 import Input from "@/components/style/Input";
 import dynamic from "next/dynamic";
 import { loginUser } from "@/lib/Auth";
+import { useRouter } from "next/router";
+import { NextPageContext } from "next";
+import Cookies from "cookie";
 const ReactCodeInput = dynamic(import("react-code-input"));
 
 const ibm = IBM_Plex_Mono({
@@ -30,6 +33,7 @@ const Login = () => {
 export default Login;
 
 const Content = () => {
+  const Router = useRouter();
   const [password, setPassword] = useState("");
   const [btnIsPressed, setBtnIsPressed] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
@@ -39,13 +43,16 @@ const Content = () => {
     password: "",
   });
 
+  useLayoutEffect(() => {
+    if (localStorage.getItem("accesstoken")) Router.push("/room");
+  }, []);
+
   useEffect(() => {
     setWidth(window.innerWidth);
   }, []);
 
   const checkPassword = () => {
     const isPasswordValid = password.length === 6;
-
     setBtnIsPressed(true);
     setIsPasswordValid(isPasswordValid);
     if (!isPasswordValid) setPassword("");
@@ -86,18 +93,32 @@ const Content = () => {
     },
   };
 
+  async function workingSubmit(e: any) {
+    e.preventDefault();
+    checkPassword();
+    if (password.length === 6) {
+      const data = await loginUser(form);
+      if (data.token) Router.push("/room");
+    }
+  }
+
   return (
     <div className="flex flex-col md:ml-2 h-full md:w-full">
       <p className="text-lg text-gray-500 text-center md:text-left mt-4 md:mt-0">
         Login to your account.
       </p>
-      <div className="w-full select-none h-full md:w-full flex flex-col items-center mt-[100px] space-y-4">
+      <form
+        className="w-full select-none h-full md:w-full flex flex-col items-center mt-[100px] space-y-4"
+        onSubmit={workingSubmit}
+      >
         <span className="uppercase px-[15px] text-md bg-gray-800/75 rounded-full mb-[30px] border border-neutral-600 text-white">
           LOGIN
         </span>
         <div className="!mb-5">
           <Input
             type="text"
+            placeholder="Username"
+            required={true}
             text="Username"
             value={form.username}
             helperText={"Enter your username"}
@@ -122,17 +143,21 @@ const Content = () => {
             {...propsStyle}
           />
         </div>
-        <Button
-          text="Login"
-          width
-          onClick={async () => {
-            checkPassword();
-            if (isPasswordValid) {
-              await loginUser(form);
-            }
-          }}
-        />
-      </div>
+        <Button text="Login" width onClick={workingSubmit} />
+      </form>
     </div>
   );
+};
+
+Login.getInitialProps = async (ctx: NextPageContext) => {
+  const { req, res } = ctx;
+  if (req && res) {
+    const cookies = Cookies.parse(req.headers.cookie || "");
+    console.log(cookies);
+    if (cookies.accesstoken) {
+      res.writeHead(302, { Location: "/room" });
+      return res.end();
+    }
+  }
+  return {};
 };
