@@ -1,3 +1,4 @@
+'use client';
 import { IBM_Plex_Mono } from "@next/font/google";
 import Image from "next/image";
 import Logo from "@/images/logo.png";

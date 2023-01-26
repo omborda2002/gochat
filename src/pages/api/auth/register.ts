@@ -44,7 +44,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       res.setHeader(
         "Set-Cookie",
         Cookie.serialize("accesstoken", token, {
-          httpOnly: true,
           secure: process.env.NODE_ENV !== "development",
           sameSite: "strict",
           maxAge: 604800,
