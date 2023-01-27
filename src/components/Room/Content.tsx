@@ -1,14 +1,24 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import ReactCodeInput from "react-code-input";
 import Button from "../style/Button";
 import { SocketContext } from "@/context/socket";
+import useRoom from "@/context/RoomContext";
+import Router from "next/router";
 
-const Content = () => {
+const Content: FunctionComponent = () => {
   const socket = useContext(SocketContext);
   const [password, setPassword] = useState("");
   const [btnIsPressed, setBtnIsPressed] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
   const [width, setWidth] = useState<any>(0);
+  const { roomId, setRoomID } = useRoom();
+
+  console.log("ROOMID :", roomId);
   useEffect(() => {
     setWidth(window.innerWidth);
   }, []);
@@ -28,8 +38,8 @@ const Content = () => {
   const propsStyle = {
     inputStyle: {
       margin: parseInt(width) < 768 ? "2px" : "8px",
-      marginLeft: "0px",
       MozAppearance: "textfield",
+      marginLeft: "0px",
       width: parseInt(width) < 768 ? "40px" : "50px",
       borderRadius: "5px",
       fontSize: "14px",
@@ -41,7 +51,6 @@ const Content = () => {
     },
     inputStyleInvalid: {
       margin: parseInt(width) < 768 ? "2px" : "8px",
-      marginLeft: "0px",
       MozAppearance: "textfield",
       width: parseInt(width) < 768 ? "40px" : "50px",
       borderRadius: "5px",
@@ -59,7 +68,8 @@ const Content = () => {
     checkPassword();
     if (password.length === 6 && isPasswordValid) {
       await socket.emit("join-room", password);
-      console.log("WORKING", password);
+      await setRoomID(password);
+      await Router.push("/gossip/[roomId]", `/gossip/${password}`);
     }
   };
   return (
