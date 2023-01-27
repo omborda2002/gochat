@@ -1,7 +1,7 @@
 import withAuth from "@/app/withAuth";
 import React, { useEffect } from "react";
 import Plan from "@/images/plan.svg";
-import Logout from "@/images/logout.svg";
+import Logout from "@/images/logout2.svg";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/images/logo.png";
@@ -86,7 +86,7 @@ const Room = ({ token }: any) => {
                       height={35}
                       alt="Logout"
                       priority
-                      className="backdrop-blur-md hover:bg-white/10 p-[5px] border border-neutral-600 rounded-lg"
+                      className="backdrop-blur-md hover:bg-white/10 p-[5px] rounded-lg"
                     />
                   </div>
                 </motion.div>
