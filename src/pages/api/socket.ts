@@ -21,10 +21,15 @@ export default function SocketHandler(
       // socket.join("room", () => {
       //   console.log("Joined room");
       // });
-      socket.on('join-room', (room) => {
+      socket.on("join-room", (room) => {
         socket.join(room);
         console.log("Joined room", room);
-      })
+      });
+
+      socket.on("message", ({ message }) => {
+        console.log("Message received", message);
+        socket.broadcast.emit("message", message);
+      });
     });
   }
 
