@@ -31,3 +31,26 @@ a {
     color-scheme: dark;
   }
 }
+
+::-webkit-scrollbar {
+  height: 12px;
+  width: 5px;
+  background: #000000;
+}
+
+::-webkit-scrollbar-corner {
+  background: #000000;
+}
+
+#content-wrapper::-webkit-scrollbar-thumb {
+  background-color: -o-linear-gradient(bottom, #000, #272727);
+  background-color: linear-gradient(
+    0deg,
+    #000,
+    #272727
+  ); /* s the background color of content-wrapper */
+}
+
+#content-wrapper:hover::-webkit-scrollbar-thumb {
+  background-color: gray;
+}
