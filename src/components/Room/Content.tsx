@@ -10,28 +10,46 @@ import { SocketContext } from "@/context/socket";
 import useRoom from "@/context/RoomContext";
 import Router from "next/router";
 
-const Content: FunctionComponent = () => {
+const Content = ({ user }: any) => {
   const socket = useContext(SocketContext);
-  const [password, setPassword] = useState("");
+  const [room, setroom] = useState("");
   const [btnIsPressed, setBtnIsPressed] = useState(false);
-  const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [isroomValid, setIsroomValid] = useState(true);
   const [width, setWidth] = useState<any>(0);
   const { roomId, setRoomID } = useRoom();
 
-  console.log("ROOMID :", roomId);
   useEffect(() => {
     setWidth(window.innerWidth);
+    checkRoomJoined();
   }, []);
 
-  const checkPassword = () => {
-    const isPasswordValid = password.length === 6;
-    setBtnIsPressed(true);
-    setIsPasswordValid(isPasswordValid);
-    if (!isPasswordValid) setPassword("");
+  const checkRoomJoined = async () => {
+    if (user) {
+      const result = await fetch("/api/chat/checkroomjoined", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user: user._id }),
+      });
+      const { room } = await result.json();
+      if (room) {
+        await socket.emit("join-room", { roomId: room, user: user });
+        setRoomID(room);
+        await Router.push("/gossip/[slug]", `/gossip/${room}`);
+      }
+    }
   };
 
-  const handlePinChange = (Password: any) => {
-    setPassword(Password);
+  const checkroom = () => {
+    const isroomValid = room.length === 6;
+    setBtnIsPressed(true);
+    setIsroomValid(isroomValid);
+    if (!isroomValid) setroom("");
+  };
+
+  const handlePinChange = (room: any) => {
+    setroom(room);
     setBtnIsPressed(false);
   };
 
@@ -63,13 +81,34 @@ const Content: FunctionComponent = () => {
     },
   };
 
+  const connectingUser = async () => {
+    const result = await fetch("/api/chat/connectinguser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        roomId: room,
+        currentUser_id: user._id,
+        name: user.name,
+        username: user.username,
+      }),
+    });
+    const data = await result.json();
+    return data;
+  };
+
   const workingSubmit = async (e: any) => {
     e.preventDefault();
-    checkPassword();
-    if (password.length === 6 && isPasswordValid) {
-      await socket.emit("join-room", password);
-      await setRoomID(password);
-      await Router.push("/gossip/[roomId]", `/gossip/${password}`);
+    if (user) await connectingUser();
+    checkroom();
+    if (room.length === 6 && isroomValid) {
+      await socket.emit("join-room", {
+        roomId: room,
+        user,
+      });
+      await setRoomID(room);
+      await Router.push("/gossip/[slug]", `/gossip/${room}`);
     }
   };
   return (
@@ -86,13 +125,13 @@ const Content: FunctionComponent = () => {
             Secret Code
           </label>
           <ReactCodeInput
-            id="password"
-            type="password"
+            id="room"
+            type="room"
             autoFocus={false}
-            isValid={isPasswordValid}
+            isValid={isroomValid}
             fields={6}
             onChange={handlePinChange}
-            value={password}
+            value={room}
             className="!w-full !flex !justify-between !items-center"
             {...propsStyle}
           />

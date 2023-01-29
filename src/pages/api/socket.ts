@@ -15,20 +15,23 @@ export default function SocketHandler(
 
     io.on("connection", (socket) => {
       console.log("Socket connected", socket.id);
-      // socket.on("input-change", (msg) => {
-      //   socket.broadcast.emit("update-input", msg);
-      // });
-      // socket.join("room", () => {
-      //   console.log("Joined room");
-      // });
-      socket.on("join-room", (room) => {
-        socket.join(room);
-        console.log("Joined room", room);
+
+      socket.on("join-room", async (data: any) => {
+        console.log("Joining room :::: ", data);
+        await socket.join(data.roomId);
+        await socket.broadcast
+          .to(data.roomId)
+          .emit("userconnected", data.user);
       });
 
-      socket.on("message", ({ message }) => {
+      socket.on("leave-room", async (data) => {
+        await socket.leave(data.roomId);
+        console.log("Left room => ", data.roomId);
+      });
+
+      socket.on("message", async ({ message }) => {
         console.log("Message received", message);
-        socket.broadcast.emit("message", message);
+        await socket.broadcast.emit("message", message);
       });
     });
   }

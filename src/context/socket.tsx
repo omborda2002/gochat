@@ -4,7 +4,7 @@ import React from "react";
 export let socket: any = null;
 
 (async () => {
-  await fetch("/api/socket");
+  await fetch("http://localhost:3000/api/socket");
   socket = io();
 })();
 

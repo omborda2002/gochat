@@ -1,6 +1,24 @@
 import multiavatar from "@multiavatar/multiavatar";
 import clsx from "clsx";
 import React, { FC, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+
+const variants = {
+  open: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      y: { stiffness: 1000, velocity: -100 },
+    },
+  },
+  closed: {
+    y: 50,
+    opacity: 0,
+    transition: {
+      y: { stiffness: 1000 },
+    },
+  },
+};
 
 const randomColor = [
   {
@@ -61,7 +79,7 @@ const randomColor = [
   },
 ];
 
-const UserCard: FC = () => {
+const UserCard: FC = ({ data }: any) => {
   const image: any = useRef(null);
   useEffect(() => {
     (async () => {
@@ -78,9 +96,9 @@ const UserCard: FC = () => {
     str = str + " " + randomColor[random].textColor;
     return str;
   };
-
   return (
-    <div
+    <motion.div
+      variants={variants}
       className={clsx(
         "w-full rounded-lg flex flex-row justify-start space-x-3 items-center p-3",
         getRandomColor()
@@ -93,8 +111,8 @@ const UserCard: FC = () => {
         ></div>
         <span className="absolute bottom-0 right-0 inline-block w-3 h-3 bg-green-600 border-2 border-white rounded-full"></span>
       </div>
-      <div className="capitalize text-xl">User Name</div>
-    </div>
+      <div className="capitalize text-xl">{data?.name}</div>
+    </motion.div>
   );
 };
 

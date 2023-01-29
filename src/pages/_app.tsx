@@ -6,14 +6,13 @@ import NProgress from "nprogress"; //nprogress module
 import "nprogress/nprogress.css";
 import { Toaster } from "react-hot-toast";
 import { IBM_Plex_Mono } from "@next/font/google";
+import { RoomProvider } from "@/context/RoomContext";
 // import PageLoader from "@/components/style/PageLoader";
-
 
 const ibm = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: "400",
 });
-
 
 export default function MyApp({
   Component,
@@ -40,17 +39,20 @@ export default function MyApp({
       Router.events.off("routeChangeError", end);
     };
   }, []);
-  
+
   return (
-    <AnimatePresence
-      mode="wait"
-      initial={false}
-      onExitComplete={() => window.scrollTo(0, 0)}
-    >
-      <div className={ibm.className}>
-      <Component {...pageProps} key={Router.asPath} />
-      </div>
-      <Toaster />
-    </AnimatePresence>
+    <RoomProvider>
+      {" "}
+      <AnimatePresence
+        mode="wait"
+        initial={false}
+        onExitComplete={() => window.scrollTo(0, 0)}
+      >
+        <div className={ibm.className}>
+          <Component {...pageProps} key={Router.asPath} />
+        </div>
+        <Toaster />
+      </AnimatePresence>
+    </RoomProvider>
   );
 }

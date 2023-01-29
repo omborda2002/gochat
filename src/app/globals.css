@@ -42,7 +42,7 @@ a {
   background: #000000;
 }
 
-#content-wrapper::-webkit-scrollbar-thumb {
+.content-wrapper::-webkit-scrollbar-thumb {
   background-color: -o-linear-gradient(bottom, #000, #272727);
   background-color: linear-gradient(
     0deg,
@@ -51,6 +51,22 @@ a {
   ); /* s the background color of content-wrapper */
 }
 
-#content-wrapper:hover::-webkit-scrollbar-thumb {
+.content-wrapper:hover::-webkit-scrollbar-thumb {
   background-color: gray;
+}
+
+.content-wrapper::-webkit-scrollbar-track {
+  background: #272727;
+}
+
+.content-wrapper2::-webkit-scrollbar-thumb {
+  background-color: black/* s the background color of content-wrapper */
+}
+
+.content-wrapper2:hover::-webkit-scrollbar-thumb {
+  background-color: gray;
+}
+
+.content-wrapper2::-webkit-scrollbar-track {
+  background: black;
 }

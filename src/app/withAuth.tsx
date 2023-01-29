@@ -1,4 +1,3 @@
-
 import Router from "next/router";
 import React, { useEffect } from "react";
 import jwt from "jsonwebtoken";
@@ -9,7 +8,7 @@ import Cookie from "cookie";
 const secret =
   "mOvLC9lJQHxQoboK0aYfqTFdF18dYQgtf9iRhEUNXU5OQ97VhyRXqwrV7MoyPbNCdKu9SmSlY6i02mNY5n075fEz9Ymk4PBbOvLzIPNce8CwNWzooX9WMwf1qkVhSc6soIkAefwfw";
 
-const withAuth = (WrappedComponent: React.FC<any>) => {
+const withAuth = (WrappedComponent: any) => {
   const WithAuth = (props: any) => {
     useEffect(() => {
       (async () => {
@@ -49,7 +48,7 @@ const withAuth = (WrappedComponent: React.FC<any>) => {
     const componentProps =
       WrappedComponent.getInitialProps &&
       (await WrappedComponent.getInitialProps(ctx));
-    return { ...componentProps, user: ctx.user };
+    return { ...componentProps, user: ctx.user?._doc };
   };
 
   return WithAuth;
