@@ -15,6 +15,7 @@ interface ValueInterFace {
   setChat: any;
   connectedUsers: any;
   setConnectedUsers: any;
+  setDisconnectedUsers: any;
 }
 
 export const RoomProvider = ({ children }: any) => {
@@ -42,7 +43,6 @@ export const RoomProvider = ({ children }: any) => {
   };
 
   const setConnectedUsers = (connectedUsers: any, userId: any) => {
-    console.log("connectedUsers NEWWW", connectedUsers);
     if (Array.isArray(connectedUsers)) {
       connectedUsers = connectedUsers.filter(
         (user: any) => user.currentUser_id !== userId
@@ -59,6 +59,14 @@ export const RoomProvider = ({ children }: any) => {
     });
   };
 
+  const setDisconnectedUsers = (disconnectedUsers: any) => {
+    console.log("disconnectedUsers client=> ", disconnectedUsers);
+    dispatch({
+      type: RoomActionKind.DISCONNECTED_USERS,
+      payload: disconnectedUsers,
+    });
+  };
+
   let value: ValueInterFace = {
     roomId: state.roomId,
     user: state.user,
@@ -68,6 +76,7 @@ export const RoomProvider = ({ children }: any) => {
     setUser,
     setChat,
     setConnectedUsers,
+    setDisconnectedUsers,
   };
 
   return <RoomContext.Provider value={value}>{children}</RoomContext.Provider>;

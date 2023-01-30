@@ -26,7 +26,13 @@ const Gossip = (PROPS: any) => {
   const [open, setOpen] = useCycle(true, false);
   const router = useRouter();
   const [name, setName] = useState<string | null>(null);
-  const { roomId, setRoomID, connectedUsers, setConnectedUsers } = useRoom();
+  const {
+    roomId,
+    setRoomID,
+    connectedUsers,
+    setConnectedUsers,
+    setDisconnectedUsers,
+  } = useRoom();
   const { slug }: any = router.query;
 
   const logout = async () => {
@@ -53,13 +59,19 @@ const Gossip = (PROPS: any) => {
     getallconnectedusers();
 
     const listener = (data: any) => {
-      console.log("userconnected", data);
       setConnectedUsers(data, PROPS?.user?._id);
     };
     socket.on("userconnected", listener);
 
+    const listener2 = async (data: any) => {
+      setDisconnectedUsers(data.currentUser_id);
+    };
+
+    socket.on("userdisconnected", listener2);
+
     return () => {
       socket.off("userconnected", listener);
+      socket.off("userdisconnected", listener2);
     };
   }, []);
 

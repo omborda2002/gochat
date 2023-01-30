@@ -3,6 +3,7 @@ export enum RoomActionKind {
   USER = "USER",
   CHAT = "CHAT",
   CONNECTED_USERS = "CONNECTED_USERS",
+  DISCONNECTED_USERS = "DISCONNECTED_USERS",
 }
 
 interface RoomState {
@@ -47,6 +48,14 @@ const RoomReducer = (state: RoomState, action: RoomAction) => {
       return {
         ...state,
         connectedUsers: payload,
+      };
+
+    case RoomActionKind.DISCONNECTED_USERS:
+      return {
+        ...state,
+        connectedUsers: state.connectedUsers.filter(
+          (user: any) => user.currentUser_id !== payload
+        ),
       };
 
     default:
