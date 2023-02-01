@@ -1,4 +1,3 @@
-import ConnectedUsers from "@/models/ConnectedUsers";
 import Messages from "@/models/Messages";
 import dbConnect from "@/utils/dbConnect";
 import { NextApiRequest, NextApiResponse } from "next";

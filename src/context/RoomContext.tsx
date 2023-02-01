@@ -12,10 +12,13 @@ interface ValueInterFace {
   user: any;
   setUser: any;
   chat: any;
+  messages: any;
   setChat: any;
   connectedUsers: any;
   setConnectedUsers: any;
   setDisconnectedUsers: any;
+  setMessages: any;
+  setNewMessage: any;
 }
 
 export const RoomProvider = ({ children }: any) => {
@@ -42,7 +45,7 @@ export const RoomProvider = ({ children }: any) => {
     });
   };
 
-  const setConnectedUsers = (connectedUsers: any, userId: any) => {
+  const setConnectedUsers = (connectedUsers: any, userId: any): void => {
     if (Array.isArray(connectedUsers)) {
       connectedUsers = connectedUsers.filter(
         (user: any) => user.currentUser_id !== userId
@@ -59,11 +62,40 @@ export const RoomProvider = ({ children }: any) => {
     });
   };
 
-  const setDisconnectedUsers = (disconnectedUsers: any) => {
+  const setDisconnectedUsers = (disconnectedUsers: any): void => {
     console.log("disconnectedUsers client=> ", disconnectedUsers);
     dispatch({
       type: RoomActionKind.DISCONNECTED_USERS,
       payload: disconnectedUsers,
+    });
+  };
+
+  const setMessages = (messages: any): void => {
+    if (Array.isArray(messages)) {
+      for (let i = 0; i < messages.length; i++) {
+        for (let j = 0; j < state.messages.length; j++) {
+          if (messages[i]._id !== state.messages[j]._id) {
+            messages = [...state.messages, messages[i]];
+          }
+        }
+      }
+    } else {
+      messages = [...state.messages, messages];
+    }
+
+    console.log("messages )))=> ", messages);
+
+    dispatch({
+      type: RoomActionKind.MESSAGES,
+      payload: messages,
+    });
+  };
+
+  const setNewMessage = (message: any): void => {
+    console.log("message => ", message);
+    dispatch({
+      type: RoomActionKind.ADD_MESSAGE,
+      payload: message,
     });
   };
 
@@ -72,11 +104,14 @@ export const RoomProvider = ({ children }: any) => {
     user: state.user,
     chat: state.chat,
     connectedUsers: state.connectedUsers,
+    messages: state.messages,
     setRoomID,
     setUser,
     setChat,
     setConnectedUsers,
     setDisconnectedUsers,
+    setMessages,
+    setNewMessage,
   };
 
   return <RoomContext.Provider value={value}>{children}</RoomContext.Provider>;

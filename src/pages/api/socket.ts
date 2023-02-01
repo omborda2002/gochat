@@ -35,9 +35,9 @@ export default function SocketHandler(
         await socket.leave(data.roomId);
       });
 
-      socket.on("message", async ({ message }) => {
-        console.log("Message received", message);
-        await socket.broadcast.emit("message", message);
+      socket.on("message", async (data: any) => {
+        console.log("Message received", data);
+        await socket.broadcast.to(data.roomId).emit("message", data);
       });
 
       socket.on("disconnect", async (data: any) => {

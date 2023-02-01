@@ -16,7 +16,7 @@ const Content = ({ user }: any) => {
   const [btnIsPressed, setBtnIsPressed] = useState(false);
   const [isroomValid, setIsroomValid] = useState(true);
   const [width, setWidth] = useState<any>(0);
-  const { roomId, setRoomID } = useRoom();
+  const { roomId, setRoomID }: any = useRoom();
 
   useEffect(() => {
     setWidth(window.innerWidth);
@@ -36,7 +36,7 @@ const Content = ({ user }: any) => {
       if (room) {
         await socket.emit("join-room", { roomId: room, user: user });
         setRoomID(room);
-        await Router.push("/gossip/[slug]", `/gossip/${room}`);
+        await Router.push("/gossip/[slug]", `/gossip/${room}?u=${user._id}`);
       }
     }
   };
@@ -108,7 +108,7 @@ const Content = ({ user }: any) => {
         user,
       });
       await setRoomID(room);
-      await Router.push("/gossip/[slug]", `/gossip/${room}`);
+      await Router.push("/gossip/[slug]", `/gossip/${room}/?u=${user._id}`);
     }
   };
   return (

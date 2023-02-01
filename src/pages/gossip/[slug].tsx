@@ -32,7 +32,11 @@ const Gossip = (PROPS: any) => {
     connectedUsers,
     setConnectedUsers,
     setDisconnectedUsers,
-  } = useRoom();
+    messages,
+    setMessages,
+    setNewMessage,
+  }: any = useRoom();
+  console.log("messages: ", messages);
   const { slug }: any = router.query;
 
   const logout = async () => {
@@ -48,15 +52,13 @@ const Gossip = (PROPS: any) => {
       Router.push("/auth/login");
     }
 
-    if (inputRef.current) inputRef.current.focus();
-
-    if (divRef.current) divRef.current.scrollTo(0, divRef.current.scrollHeight);
-
     if (PROPS.user) {
       setName(PROPS?.user?.name);
     }
+
     checkRoomJoined();
     getallconnectedusers();
+    getAllMessages();
 
     const listener = (data: any) => {
       setConnectedUsers(data, PROPS?.user?._id);
@@ -67,13 +69,35 @@ const Gossip = (PROPS: any) => {
       setDisconnectedUsers(data.currentUser_id);
     };
 
-    socket.on("userdisconnected", listener2);
-
-    return () => {
-      socket.off("userconnected", listener);
-      socket.off("userdisconnected", listener2);
+    const listener3 = (data: any) => {
+      setNewMessage(data);
     };
+
+    socket.on("userdisconnected", listener2);
+    socket.on("message", listener3);
   }, []);
+
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.focus();
+
+    if (divRef.current) divRef.current.scrollTo(0, divRef.current.scrollHeight);
+  }, [messages]);
+
+  const getAllMessages = async () => {
+    if (PROPS.user) {
+      const result = await fetch("/api/chat/getmessages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ roomId: slug }),
+      });
+      const data = await result.json();
+      if (data.ok) {
+        setMessages(data.messages);
+      }
+    }
+  };
 
   const getallconnectedusers = async () => {
     if (PROPS.user) {
@@ -106,7 +130,6 @@ const Gossip = (PROPS: any) => {
           user: PROPS?.user,
         });
         setRoomID(room);
-        await Router.push("/gossip/[slug]", `/gossip/${room}`);
       } else {
         await Router.push("/room");
       }
@@ -119,10 +142,33 @@ const Gossip = (PROPS: any) => {
 
   const sendMessage = async (e: any) => {
     e.preventDefault();
-    if (!message) return;
+    if (!message || message === null) return;
 
-    await socket.emit("message", { message });
-    setMessage("");
+    if (PROPS.user) {
+      let result = await fetch("/api/chat/addmessage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          roomId: slug,
+          currentUser_id: PROPS.user._id,
+          message,
+        }),
+      });
+      if (result.ok) {
+        const sendingData = {
+          message,
+          sender: PROPS.user._id,
+          user: [{ currentUser_id: PROPS.user._id, name: PROPS.user.name }],
+          roomId: slug,
+          date: new Date(),
+        };
+        setNewMessage(sendingData);
+        await socket.emit("message", sendingData);
+        setMessage("");
+      }
+    }
   };
 
   const disconnectingUser = async () => {
@@ -229,7 +275,7 @@ const Gossip = (PROPS: any) => {
               )}
             >
               <motion.div
-                className="absolute bg-gray-500/70 right-[-25px] top-1/2 rounded-r-lg border-y-[1px] border-r-[1px] border-neutral-500/50 transition-transform z-[1000] cursor-pointer"
+                className="absolute bg-gray-500/40   hover:bg-gray-500/70 right-[-25px] top-1/2 rounded-r-lg border-y-[1px] border-r-[1px] border-neutral-500/50 transition-transform z-[1000] cursor-pointer"
                 onClick={() => setOpen()}
               >
                 <Image
@@ -241,7 +287,7 @@ const Gossip = (PROPS: any) => {
                   priority
                   className={clsx(
                     !open ? "" : "rotate-[180deg]",
-                    "backdrop-blur-md text-white p-[5px] transition-transform"
+                    "backdrop-blur-md text-white p-[5px] transition-transform bg-transparent"
                   )}
                 />
               </motion.div>
@@ -279,7 +325,7 @@ const Gossip = (PROPS: any) => {
                 )}
               >
                 {connectedUsers.length > 0 ? (
-                  connectedUsers.map((i, key) => (
+                  connectedUsers.map((i: any, key: any) => (
                     <div key={key}>
                       <UserCard data={i} />
                     </div>
@@ -323,51 +369,15 @@ const Gossip = (PROPS: any) => {
                   ref={divRef}
                   className="content-wrapper2 flex flex-col space-y-2 p-4 h-[calc(100vh_-_140px)] overflow-y-scroll"
                 >
-                  <Message
-                    text="Hello, how are you? lorem ipsum dolor sit amet, consectetur adipiscing elit. lorem
-                    ipsum dolor sit amet, consectetur adipiscing elit. lorem ipsum dolor sit amet, consectetur"
-                    sender="John"
-                    timestamp="10:30 AM"
-                    isSender={false}
-                  />
-                  <Message
-                    text="I'm good, thanks for asking!"
-                    sender="Jane"
-                    timestamp="10:31 AM"
-                    isSender={true}
-                  />
-                  <Message
-                    text="I'm good, thanks for asking!"
-                    sender="Jane"
-                    timestamp="10:31 AM"
-                    isSender={true}
-                  />
-                  <Message
-                    text="Hello, how are you? lorem ipsum dolor sit amet, consectetur adipiscing elit. lorem
-                    ipsum dolor sit amet, consectetur adipiscing elit. lorem ipsum dolor sit amet, consectetur"
-                    sender="John"
-                    timestamp="10:30 AM"
-                    isSender={false}
-                  />
-                  <Message
-                    text="Hello, how are you? lorem ipsum dolor sit amet, consectetur adipiscing elit. lorem
-                    ipsum dolor sit amet, consectetur adipiscing elit. lorem ipsum dolor sit amet, consectetur"
-                    sender="John"
-                    timestamp="10:30 AM"
-                    isSender={false}
-                  />
-                  <Message
-                    text="I'm good, thanks for asking!"
-                    sender="Jane"
-                    timestamp="10:31 AM"
-                    isSender={true}
-                  />
-                  <Message
-                    text="Hello World"
-                    sender="John"
-                    timestamp="10:30 AM"
-                    isSender={false}
-                  />
+                  {messages.map((i: any, key: any) => (
+                    <Message
+                      key={key}
+                      text={i.message}
+                      sender={i.user[0].name}
+                      timestamp={i.date}
+                      isSender={i.user[0].currentUser_id === PROPS.user._id}
+                    />
+                  ))}
                 </div>
               </div>
               <div className="text-white z-[1000] bg-transparent h-[50px] px-3">
@@ -411,19 +421,31 @@ const Gossip = (PROPS: any) => {
 export default withAuth(Gossip);
 
 const Message = ({ text, sender, timestamp, isSender }: any) => {
+  const dateFormater = (date: any) => {
+    const dateObj = new Date(date);
+    let hours: any = dateObj.getHours();
+    let minutes: any = dateObj.getMinutes();
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    const ampm = hours >= 12 ? "PM" : "AM";
+    return `${hours}:${minutes} ${ampm}`;
+  };
   return (
     <div
       className={clsx(
         isSender
-          ? "self-end  rounded-l-2xl rounded-br-2xl rounded-tr-md"
+          ? "!self-end  rounded-l-2xl rounded-br-2xl rounded-tr-md"
           : "self-start rounded-r-2xl rounded-bl-2xl rounded-tl-md",
         "bg-[#272727] px-2 py-2 !pb-1 w-fit max-w-md"
       )}
     >
-      <div className="text-xs text-rose-500 font-semibold">{sender}</div>
+      <div className="text-xs text-rose-500 font-semibold mr-[50px]">
+        {sender}
+      </div>
       <div className="text-white text-sm">{text}</div>
-      <div className="text-xs text-gray-500 flex flex-row justify-end select-none">
-        {timestamp}
+      <div className="text-[12px] text-gray-500 flex flex-row justify-end select-none">
+        {dateFormater(timestamp)}
       </div>
     </div>
   );
@@ -480,11 +502,3 @@ const rgbDataURL = (r: number, g: number, b: number) =>
   `data:image/gif;base64,R0lGODlhAQABAPAA${
     triplet(0, r, g) + triplet(b, 255, 255)
   }/yH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==`;
-
-Gossip.getInitialProps = async (ctx: any) => {
-  return {
-    props: {
-      name: "Hello",
-    },
-  };
-};

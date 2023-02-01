@@ -45,6 +45,7 @@ const withAuth = (WrappedComponent: any) => {
       ctx.res?.writeHead(302, { Location: "/auth/login" });
       ctx.res?.end();
     }
+
     const componentProps =
       WrappedComponent.getInitialProps &&
       (await WrappedComponent.getInitialProps(ctx));

@@ -4,6 +4,8 @@ export enum RoomActionKind {
   CHAT = "CHAT",
   CONNECTED_USERS = "CONNECTED_USERS",
   DISCONNECTED_USERS = "DISCONNECTED_USERS",
+  MESSAGES = "MESSAGES",
+  ADD_MESSAGE = "ADD_MESSAGE",
 }
 
 interface RoomState {
@@ -11,6 +13,7 @@ interface RoomState {
   user: any;
   chat: any;
   connectedUsers: any;
+  messages: any;
 }
 
 interface RoomAction {
@@ -23,6 +26,7 @@ export const initialState = {
   user: null,
   chat: [],
   connectedUsers: [],
+  messages: [],
 };
 
 const RoomReducer = (state: RoomState, action: RoomAction) => {
@@ -56,6 +60,18 @@ const RoomReducer = (state: RoomState, action: RoomAction) => {
         connectedUsers: state.connectedUsers.filter(
           (user: any) => user.currentUser_id !== payload
         ),
+      };
+
+    case RoomActionKind.MESSAGES:
+      return {
+        ...state,
+        messages: payload,
+      };
+
+    case RoomActionKind.ADD_MESSAGE:
+      return {
+        ...state,
+        messages: [...state.messages, payload],
       };
 
     default:
